@@ -1,6 +1,6 @@
-"""The Config base class contains settings that are common to all configurations; the dif‐
-    ferent subclasses define settings that are specific to a configuration. Additional config‐
-    urations can be added as needed
+"""The Config base class contains settings that are common to all configurations;
+ the different subclasses define settings that are specific to a configuration.
+  Additional configurations can be added as needed
 """
 import os
 
@@ -21,6 +21,7 @@ class TestingConfig:
 
 class ProductionConfig:
     DEBUG = False
+
 
 config = {
     'development': DevelopmentConfig,
