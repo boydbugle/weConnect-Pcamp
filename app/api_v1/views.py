@@ -15,4 +15,4 @@ def register_user():
         password = data.get('password')
         create_user = User(email, password)
         users.append(create_user)
-        return make_response(jsonify({'message': 'successful registration'}), 201)
+        return make_response(jsonify({'message': 'successfully created user'}), 201)

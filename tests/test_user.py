@@ -7,10 +7,7 @@ class UserTestCase(unittest.TestCase):
 
     def setUp(self):
         self.app = create_app('testing')
-        self.client = self.app.test_client()
-
-    def tearDown(self):
-        pass
+        self.client = self.app.test_client
 
     def test_user_can_register_successfully(self, email="app@test.com", password="apptest"):
         user_data = {'email': email, 'password': password}
@@ -21,4 +18,4 @@ class UserTestCase(unittest.TestCase):
         )
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], 'successfully created user')
-        self.assertEqual(result.status_code, 201)
+        self.assertEqual(res.status_code, 201)

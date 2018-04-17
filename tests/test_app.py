@@ -8,7 +8,7 @@ class AppTESTCase(unittest.TestCase):
         self.app = create_app('testing')
         self.app_context = self.app.app_context()
         self.app_context.push()
-        self.client = self.app.test_client()
+        self.client = self.app.test_client
 
     def tearDown(self):
         self.app_context.pop()
