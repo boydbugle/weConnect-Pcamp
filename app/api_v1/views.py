@@ -1,6 +1,7 @@
 # import json
 from . import api
 from .user import User
+from .validation import validate_email
 from flask import request, jsonify, make_response
 
 users = []
@@ -12,7 +13,12 @@ def register_user():
     if request.method == 'POST':
         data = request.get_json()
         email = data.get('email')
+        valid_email = validate_email(email)
         password = data.get('password')
-        create_user = User(email, password)
-        users.append(create_user)
-        return make_response(jsonify({'message': 'successfully created user'}), 201)
+        if valid_email:
+            dict_user = User().todict(valid_email, password)
+            users.append(dict_user)
+            return make_response(jsonify({'message': 'successfully created user'}), 201)
+        else:
+            return make_response(jsonify({'message': 'invalid email'}), 403)
+
