@@ -18,35 +18,47 @@ class UserTestCase(unittest.TestCase):
             'Content-Type': 'application/json'
         }
 
-    def test_user_can_register_successfully(self, email="app@test.com", password="apptest"):
+    def get_agent_request(self, email=None, password=None, path=None):
         user_data = {'email': email, 'password': password}
-        res = self.client().post(
-            '/api/v1/register',
+        return self.client().post(
+            path,
             headers=self.get_api_headers(),
             data=json.dumps(user_data)
         )
+
+    def test_user_can_register_successfully(self, email="app@test.com", password="app1541test"):
+        res = self.get_agent_request(email, password, '/api/v1/register')
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], 'successfully created user')
         self.assertEqual(res.status_code, 201)
 
     def test_user_email_validation(self, email="apptest.cm", password="apptest"):
-        user_data = {'email': email, 'password': password}
-        res = self.client().post(
-            '/api/v1/register',
-            headers=self.get_api_headers(),
-            data=json.dumps(user_data)
-        )
+        res = self.get_agent_request(email, password, '/api/v1/register')
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], 'invalid email')
         self.assertEqual(res.status_code, 403)
 
     def test_blank_email(self, email='', password='apptest'):
-        user_data = {'email': email, 'password': password}
-        res = self.client().post(
-            '/api/v1/register',
-            headers=self.get_api_headers(),
-            data=json.dumps(user_data)
-        )
+        res = self.get_agent_request(email, password, '/api/v1/register')
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], 'invalid email')
+        self.assertEqual(res.status_code, 403)
+
+    def test_valid_password(self, email='app@test.com', password='appytesty'):
+        res = self.get_agent_request(email, password, '/api/v1/register')
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], 'successfully created user')
+        self.assertEqual(res.status_code, 201)
+
+    def test_invalid_password(self, email='app@test.com', password='48d@j'):
+        res = self.get_agent_request(email, password, '/api/v1/register')
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], 'invalid password')
+        self.assertEqual(result['hint'], 'password atleast 8 characters of numbers/letters/special char')
+        self.assertEqual(res.status_code, 403)
+
+    def test_blank_password(self, email='app@test.com', password=''):
+        res = self.get_agent_request(email, password, '/api/v1/register')
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], 'invalid password')
         self.assertEqual(res.status_code, 403)
