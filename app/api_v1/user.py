@@ -4,7 +4,8 @@ class User:
         self.password = password
         # self.user_id = user_id
 
-    def todict(self, email, password):
+    @staticmethod
+    def todict(email, password):
         user = {
             'email': email,
             'password': password,
