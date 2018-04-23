@@ -18,9 +18,11 @@ def register_user():
         valid_password = validate_password(password)
         if valid_email:
             if valid_password:
-                dict_user = User().todict(email, password)
+                u = User(email, password)
+                u.set_password(password)
+                dict_user = u.__str__()
                 users.append(dict_user)
-                return make_response(jsonify({'message': 'successfully created user', 'users': users}), 201)
+                return make_response(jsonify({'message': 'successfully created user', 'user': dict_user}), 201)
             return make_response(
                 jsonify({
                     'message': 'invalid password',
