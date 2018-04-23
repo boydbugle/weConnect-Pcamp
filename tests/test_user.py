@@ -95,3 +95,10 @@ class UserTestCase(unittest.TestCase):
         u.set_password('appytesty')
         self.assertTrue(u.check_password('appytesty'))
         self.assertFalse(u.check_password('apptest'))
+
+        # test password salts are random
+        u = User(email='app@test.com', password='appytesty')
+        u.set_password('appytesty')
+        u2 = User(email='app@test.com', password='appytesty')
+        u2.set_password('appytesty')
+        self.assertTrue(u.pw_hash != u2.pw_hash)
