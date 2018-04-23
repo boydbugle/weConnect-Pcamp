@@ -2,6 +2,7 @@ import unittest
 import json
 from base64 import b64encode
 from app import create_app
+from app.api_v1.user import User
 
 
 class UserTestCase(unittest.TestCase):
@@ -77,9 +78,14 @@ class UserTestCase(unittest.TestCase):
         self.assertEqual(result['hint'], 'make a post request')
         self.assertEqual(res.status_code, 404)
 
-    # def test_duplicate_registration(self, email="app@test.com", password="app1541test"):
-    #     res = self.get_agent_request(email, password, path)
-    #     res2 = self.get_agent_request(email, password, path)
-    #     result = json.loads(res2.data.decode())
-    #     self.assertEqual(result['error'], 'user in existence')
-    #     self.assertEqual(res2.status_code, 406)
+        # test duplicate registration
+        # res = self.get_agent_request(email, password, path)
+        # res2 = self.get_agent_request(email, password, path)
+        # result = json.loads(res2.data.decode())
+        # self.assertEqual(result['error'], 'user in existence')
+        # self.assertEqual(res2.status_code, 406)
+
+    def test_password(self):
+        # test password setter
+        u = User(email='app@test.com', password='appytesty')
+        self.assertTrue(u.pw_hash is not None)
