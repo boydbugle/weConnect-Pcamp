@@ -89,3 +89,9 @@ class UserTestCase(unittest.TestCase):
         # test password setter
         u = User(email='app@test.com', password='appytesty')
         self.assertTrue(u.pw_hash is not None)
+
+        # test password verification
+        u = User(email='app@test.com', password='appytesty')
+        u.set_password('appytesty')
+        self.assertTrue(u.check_password('appytesty'))
+        self.assertFalse(u.check_password('apptest'))
