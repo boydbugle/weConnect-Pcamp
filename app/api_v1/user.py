@@ -11,8 +11,8 @@ class User:
         self.pw_hash = generate_password_hash(password)
         # print(self.pw_hash)
         
-    def check_password(self, password):
-        return check_password_hash(self.pw_hash, password)
+    # def check_password(self, password):
+    #     return check_password_hash(self.pw_hash, password)
 
     def __str__(self):
         user = {

@@ -1,5 +1,5 @@
 # import json
-from . import api
+from . import api,auth
 from .user import User
 from .validation import validate_email, validate_password
 from flask import request, jsonify, make_response
@@ -31,3 +31,9 @@ def register_user():
         else:
             return make_response(jsonify({'message': 'invalid email'}), 403)
     return make_response(jsonify({'message': 'invalid request', 'hint': 'make a post request'}), 404)
+
+
+@api.route('/businesses', methods=['GET','POST'])
+@auth.login_required
+def get_businesses():
+    pass
