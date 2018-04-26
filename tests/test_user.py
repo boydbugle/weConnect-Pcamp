@@ -102,3 +102,4 @@ class UserTestCase(unittest.TestCase):
         u2 = User(email='app@test.com', password='appytesty')
         u2.set_password('appytesty')
         self.assertTrue(u.pw_hash != u2.pw_hash)
+
