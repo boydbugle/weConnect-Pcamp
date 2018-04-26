@@ -2,7 +2,6 @@ import unittest
 import json
 from base64 import b64encode
 from app import create_app
-# from app.api_v1.user import User
 
 
 class UserTestCase(unittest.TestCase):
@@ -27,10 +26,3 @@ class UserTestCase(unittest.TestCase):
             headers=self.get_api_headers(),
             data=json.dumps(user_data)
         )
-
-    def test_no_auth(self):
-        response = self.client().get(
-            'api/v1/businesses',
-            headers=self.get_api_headers()
-        )
-        self.assertTrue(response.status_code == 401)
