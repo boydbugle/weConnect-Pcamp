@@ -131,3 +131,25 @@ class UserTestCase(unittest.TestCase):
         self.assertEqual(result['message'], "invalid password")
         self.assertEqual(res.status_code, 401)
 
+    def test_reset_password(self):
+        # test reset_password has no get request
+        user_data = {'email': 'app@test.com', 'password': 'appytesty'}
+        res = self.client().get(
+            '/api/v1/reset_password',
+            content_type='application/json',
+            data=json.dumps(user_data)
+        )
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], 'invalid request')
+        self.assertEqual(result['hint'], 'make a post request')
+        self.assertEqual(res.status_code, 404)
+
+        # test unauthorized user
+        self.get_client_request()
+        res = self.get_client_request(path='/api/v1/reset_password')
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], "invalid email please register")
+        self.assertEqual(res.status_code, 401)
+
+        # test
+

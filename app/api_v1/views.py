@@ -50,3 +50,15 @@ def login():
     return make_response(jsonify({'message': 'invalid request', 'hint': 'make a post request'}), 404)
 
 
+@api.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    """ This route resets password to a registered account """
+    if request.method == 'POST':
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+        user_list = {user['email']: user['password'] for user in users}
+        if email in user_list:
+            pass
+        return make_response(jsonify({'message': 'invalid email please register'}), 401)
+    return make_response(jsonify({'message': 'invalid request', 'hint': 'make a post request'}), 404)
