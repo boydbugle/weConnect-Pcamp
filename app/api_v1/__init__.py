@@ -1,7 +1,7 @@
 from flask import Blueprint
-from flask_httpauth import HTTPBasicAuth
+# from flask_httpauth import HTTPBasicAuth
 
 api = Blueprint('api', __name__)
-auth = HTTPBasicAuth()
+# auth = HTTPBasicAuth()
 
 from . import user, views, validation, authentication
