@@ -18,10 +18,3 @@ class AppTESTCase(unittest.TestCase):
 
     def test_app_is_testing(self):
         self.assertTrue(current_app.config['TESTING'])
-
-    def test_no_auth(self):
-        response = self.client().get(
-            'api/v1/businesses',
-            content_type='application/json'
-        )
-        self.assertTrue(response.status_code == 401)

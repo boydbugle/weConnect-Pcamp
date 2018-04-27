@@ -5,7 +5,10 @@ from .views import users
 
 @auth.verify_password
 def verify_password(email, password):
-    for user in users:
-        if user['email'] == email:
-            return check_password_hash(user.get('password'), password)
-        return False
+    user_list = {user['email']: user['password'] for user in users}
+    if email in user_list and check_password_hash(user_list.get(email), password):
+        return True
+    elif email in user_list and check_password_hash(user_list.get(email), password) is not True:
+        return "wrong password"
+    return False
+    # return "unauthorized user"

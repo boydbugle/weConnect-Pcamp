@@ -91,16 +91,6 @@ class UserTestCase(unittest.TestCase):
         u = User(email='app@test.com', password='appytesty')
         self.assertTrue(u.pw_hash is not None)
 
-        # # test password verification
-        # u = User(email='app@test.com', password='appytesty')
-        # u.set_password('appytesty')
-        # self.assertTrue(u.check_password('appytesty'))
-        # self.assertFalse(u.check_password('apptest'))
-
-        #test password verification
-        self.get_agent_request('app@test.com', 'appytesty', '/api/v1/register')
-        self.assertTrue(verify_password('app@test.com', 'appytesty'))
-
         # test password salts are random
         u = User(email='app@test.com', password='appytesty')
         u.set_password('appytesty')
