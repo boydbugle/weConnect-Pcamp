@@ -51,3 +51,10 @@ class AuthenticationTestCase(unittest.TestCase):
         self.assertEqual(result['message'], 'invalid request')
         self.assertEqual(result['hint'], 'make a post request')
         self.assertEqual(res.status_code, 404)
+
+        # test successful login
+        self.get_client_request()
+        res = self.get_client_request(path='/api/v1/login')
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], "login successful")
+        self.assertEqual(res.status_code, 200)

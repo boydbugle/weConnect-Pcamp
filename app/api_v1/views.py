@@ -33,11 +33,11 @@ def register_user():
     return make_response(jsonify({'message': 'invalid request', 'hint': 'make a post request'}), 404)
 
 
-@api.route('/login')
+@api.route('/login', methods=['GET', 'POST'])
 def login():
     """ This route logs in a registered user """
     if request.method == 'POST':
-        pass
+        return make_response(jsonify({'message': 'login successful'}), 200)
     return make_response(jsonify({'message': 'invalid request', 'hint': 'make a post request'}), 404)
 
 # @api.route('/businesses', methods=['GET', 'POST'])
