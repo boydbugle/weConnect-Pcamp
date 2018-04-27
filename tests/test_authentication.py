@@ -1,7 +1,6 @@
 import unittest
 import json
 from app import create_app
-from app.api_v1.authentication import verify_password
 
 
 class AuthenticationTestCase(unittest.TestCase):
@@ -25,20 +24,6 @@ class AuthenticationTestCase(unittest.TestCase):
     #     )
     #     self.assertTrue(response.status_code == 401)
 
-    def test_user_verification(self):
-        # test authorized user
-        self.get_client_request()
-        self.assertTrue(verify_password('app@test.com', 'appytesty'))
-
-        # test unauthorized email
-        self.get_client_request()
-        # self.assertEqual(verify_password('appy@testy.com', 'appytesty'), 'unauthorized email')
-        self.assertFalse(verify_password('appy@testy.com', 'appytesty'))
-
-        # test unauthorized password
-        self.get_client_request()
-        self.assertEqual(verify_password('app@test.com', 'apptest'), 'wrong password')
-
     def test_login(self):
         # test login has no get request
         user_data = {'email': 'app@test.com', 'password': 'appytesty'}
@@ -58,3 +43,17 @@ class AuthenticationTestCase(unittest.TestCase):
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], "login successful")
         self.assertEqual(res.status_code, 200)
+
+        # test unauthorized email
+        self.get_client_request()
+        res = self.get_client_request(email='appy@testy.com', path='/api/v1/login')
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], "invalid email please register")
+        self.assertEqual(res.status_code, 401)
+
+        # test invalid password
+        self.get_client_request()
+        res = self.get_client_request(password='apptesty', path='/api/v1/login')
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], "invalid password")
+        self.assertEqual(res.status_code, 401)

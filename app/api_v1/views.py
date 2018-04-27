@@ -3,6 +3,7 @@ from . import api
 from .user import User
 from .validation import validate_email, validate_password
 from flask import request, jsonify, make_response
+from werkzeug.security import check_password_hash
 
 users = []
 
@@ -37,10 +38,15 @@ def register_user():
 def login():
     """ This route logs in a registered user """
     if request.method == 'POST':
-        return make_response(jsonify({'message': 'login successful'}), 200)
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+        user_list = {user['email']: user['password'] for user in users}
+        if email in user_list:
+            if check_password_hash(user_list.get(email), password):
+                return make_response(jsonify({'message': 'login successful'}), 200)
+            return make_response(jsonify({'message': 'invalid password'}), 401)
+        return make_response(jsonify({'message': 'invalid email please register'}), 401)
     return make_response(jsonify({'message': 'invalid request', 'hint': 'make a post request'}), 404)
 
-# @api.route('/businesses', methods=['GET', 'POST'])
-# @auth.login_required
-# def get_businesses():
-#     pass
+

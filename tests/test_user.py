@@ -3,7 +3,6 @@ import json
 from base64 import b64encode
 from app import create_app
 from app.api_v1.user import User
-from app.api_v1.authentication import verify_password
 
 
 class UserTestCase(unittest.TestCase):
@@ -21,7 +20,7 @@ class UserTestCase(unittest.TestCase):
             'Content-Type': 'application/json'
         }
 
-    def get_agent_request(self, email=None, password=None, path=None):
+    def get_client_request(self, email='app@test.com', password='appytesty', path='/api/v1/register'):
         user_data = {'email': email, 'password': password}
         return self.client().post(
             path,
@@ -29,48 +28,48 @@ class UserTestCase(unittest.TestCase):
             data=json.dumps(user_data)
         )
 
-    def test_user_registration(self, email="app@test.com", password="app1541test", path='/api/v1/register'):
+    def test_user_registration(self):
         # test successful registration
-        res = self.get_agent_request(email, password, path)
+        res = self.get_client_request()
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], 'successfully created user')
         self.assertEqual(res.status_code, 201)
 
         # test valid email
-        res = self.get_agent_request('apptest', password, path)
+        res = self.get_client_request(email='apptest')
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], 'invalid email')
         self.assertEqual(res.status_code, 403)
 
         # test blank email
-        res = self.get_agent_request('', password, path)
+        res = self.get_client_request(email='')
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], 'invalid email')
         self.assertEqual(res.status_code, 403)
 
         # test valid password
-        res = self.get_agent_request(email, password, path)
+        res = self.get_client_request()
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], 'successfully created user')
         self.assertEqual(res.status_code, 201)
 
         # test invalid password
-        res = self.get_agent_request(email, '48d@j', path)
+        res = self.get_client_request(password='48d@j')
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], 'invalid password')
         self.assertEqual(result['hint'], 'password atleast 8 characters of numbers/letters/special char')
         self.assertEqual(res.status_code, 403)
 
         # test blank password
-        res = self.get_agent_request(email, '', path)
+        res = self.get_client_request(password='')
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], 'invalid password')
         self.assertEqual(res.status_code, 403)
 
         # test registration has no get request
-        user_data = {'email': email, 'password': password}
+        user_data = {'email': 'app@test.com', 'password': 'appytesty'}
         res = self.client().get(
-            path,
+            '/api/v1/register',
             headers=self.get_api_headers(),
             data=json.dumps(user_data)
         )
@@ -80,8 +79,8 @@ class UserTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
 
         # test duplicate registration
-        # res = self.get_agent_request(email, password, path)
-        # res2 = self.get_agent_request(email, password, path)
+        # self.get_client_request(email, password, path)
+        # res2 = self.get_client_request(email, password, path)
         # result = json.loads(res2.data.decode())
         # self.assertEqual(result['error'], 'user in existence')
         # self.assertEqual(res2.status_code, 406)
@@ -97,4 +96,38 @@ class UserTestCase(unittest.TestCase):
         u2 = User(email='app@test.com', password='appytesty')
         u2.set_password('appytesty')
         self.assertTrue(u.pw_hash != u2.pw_hash)
+
+    def test_login(self):
+        # test login has no get request
+        user_data = {'email': 'app@test.com', 'password': 'appytesty'}
+        res = self.client().get(
+            '/api/v1/login',
+            content_type='application/json',
+            data=json.dumps(user_data)
+        )
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], 'invalid request')
+        self.assertEqual(result['hint'], 'make a post request')
+        self.assertEqual(res.status_code, 404)
+
+        # test successful login
+        self.get_client_request()
+        res = self.get_client_request(path='/api/v1/login')
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], "login successful")
+        self.assertEqual(res.status_code, 200)
+
+        # test unauthorized email
+        self.get_client_request()
+        res = self.get_client_request(email='appy@testy.com', path='/api/v1/login')
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], "invalid email please register")
+        self.assertEqual(res.status_code, 401)
+
+        # test invalid password
+        self.get_client_request()
+        res = self.get_client_request(password='apptesty', path='/api/v1/login')
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], "invalid password")
+        self.assertEqual(res.status_code, 401)
 
