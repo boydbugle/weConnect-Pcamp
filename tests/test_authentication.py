@@ -10,6 +10,14 @@ class AuthenticationTestCase(unittest.TestCase):
         self.app = create_app('testing')
         self.client = self.app.test_client
 
+    def get_client_request(self, email='app@test.com', password='appytesty', path='/api/v1/register'):
+        user_data = {'email': email, 'password': password}
+        return self.client().post(
+            path,
+            headers={'Content-Type': 'application/json'},
+            data=json.dumps(user_data)
+        )
+
     def test_no_auth(self):
         response = self.client().get(
             '/api/v1/businesses',
@@ -19,29 +27,14 @@ class AuthenticationTestCase(unittest.TestCase):
 
     def test_user_verification(self, email='app@test.com', password='appytesty'):
         # test authorized user
-        user_data ={'email': email, 'password': password}
-        self.client().post(
-            '/api/v1/register',
-            content_type='application/json',
-            data=json.dumps(user_data)
-        )
+        self.get_client_request()
         self.assertTrue(verify_password('app@test.com', 'appytesty'))
 
         # test unauthorized email
-        user_data = {'email': email, 'password': password}
-        self.client().post(
-            '/api/v1/register',
-            content_type='application/json',
-            data=json.dumps(user_data)
-        )
+        self.get_client_request()
         # self.assertEqual(verify_password('appy@testy.com', 'appytesty'), 'unauthorized email')
         self.assertFalse(verify_password('appy@testy.com', 'appytesty'))
 
         # test unauthorized password
-        user_data = {'email': email, 'password': password}
-        self.client().post(
-            '/api/v1/register',
-            content_type='application/json',
-            data=json.dumps(user_data)
-        )
+        self.get_client_request()
         self.assertEqual(verify_password('app@test.com', 'apptest'), 'wrong password')
