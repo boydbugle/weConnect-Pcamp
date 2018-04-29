@@ -126,7 +126,7 @@ class UserTestCase(unittest.TestCase):
 
         # test invalid password
         self.get_client_request()
-        res = self.get_client_request(password='apptesty', path='/api/v1/login')
+        res = self.get_client_request(password='apptest', path='/api/v1/login')
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], "invalid password")
         self.assertEqual(res.status_code, 401)
@@ -146,10 +146,39 @@ class UserTestCase(unittest.TestCase):
 
         # test unauthorized user
         self.get_client_request()
-        res = self.get_client_request(path='/api/v1/reset_password')
+        res = self.get_client_request(email='appy@testy.com', path='/api/v1/reset_password')
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], "invalid email please register")
         self.assertEqual(res.status_code, 401)
 
-        # test
+        # test incorrect password
+        self.get_client_request()
+        res = self.get_client_request(password='apptest', path='/api/v1/reset_password')
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], "invalid password")
+        self.assertEqual(res.status_code, 401)
 
+        # test validity of new password
+        self.get_client_request()
+        user_data = {'email': 'app@test.com', 'password': 'appytesty', 'new_password': 'cdsb5'}
+        res = self.client().post(
+            '/api/v1/reset_password',
+            content_type='application/json',
+            data=json.dumps(user_data)
+        )
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], 'invalid password')
+        self.assertEqual(result['hint'], 'password atleast 8 characters of numbers/letters/special char')
+        self.assertEqual(res.status_code, 403)
+
+        # test successful password reset
+        self.get_client_request()
+        user_data = {'email': 'app@test.com', 'password': 'appytesty', 'new_password': 'resetpass'}
+        res = self.client().post(
+            '/api/v1/reset_password',
+            content_type='application/json',
+            data=json.dumps(user_data)
+        )
+        result = json.loads(res.data.decode())
+        self.assertEqual(result['message'], "successful password reset")
+        self.assertEqual(res.status_code, 201)
