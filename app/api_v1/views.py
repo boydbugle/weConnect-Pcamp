@@ -43,7 +43,13 @@ def login():
         user_list = {user['email']: user['password'] for user in users}
         if email in user_list:
             if check_password_hash(user_list.get(email), password):
-                return make_response(jsonify({'message': 'login successful'}), 200)
+                token = User.generate_token(email)
+                if token:
+                    return make_response(jsonify(
+                        {'message': 'login successful',
+                         'access_token': token
+                         }),
+                        200)
             return make_response(jsonify({'message': 'invalid password'}), 401)
         return make_response(jsonify({'message': 'invalid email please register'}), 401)
     return make_response(jsonify({'message': 'invalid request', 'hint': 'make a post request'}), 404)
@@ -65,7 +71,10 @@ def reset_password():
                         if user['email'] == email:
                             user['password'] = generate_password_hash(newpassword)
                             if check_password_hash(user['password'], newpassword):
-                                return make_response(jsonify({'message': 'successful password reset', 'users': users}), 201)
+                                return make_response(jsonify({
+                                    'message': 'successful password reset',
+                                    'users': users}),
+                                    201)
                 return make_response(
                     jsonify({
                         'message': 'invalid password',
@@ -74,4 +83,3 @@ def reset_password():
             return make_response(jsonify({'message': 'invalid password'}), 401)
         return make_response(jsonify({'message': 'invalid email please register'}), 401)
     return make_response(jsonify({'message': 'invalid request', 'hint': 'make a post request'}), 404)
-
