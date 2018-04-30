@@ -1,5 +1,5 @@
 from werkzeug.security import generate_password_hash
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadData, BadSignature
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired
 from flask import current_app
 
 
@@ -22,6 +22,13 @@ class User:
     @staticmethod
     def decode_token(token):
         s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            payload = s.loads(token)
+            return payload['email']
+        except SignatureExpired:
+            return "Expired token"
+        except BadSignature:
+            return "Invalid token"
 
     def __str__(self):
         user = {
